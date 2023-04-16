@@ -7,7 +7,8 @@ then
     sudo apt-get update
     sudo apt-get install git -y
 fi
-
+# Get user input for app name
+read -p "Enter the app name: " APP_NAME
 # Get user input for GitHub repo link and access token
 read -p "Enter the GitHub repo link: " repo_link
 read -p "Enter your access token for GitHub: " access_token
@@ -15,14 +16,20 @@ read -p "Enter your access token for GitHub: " access_token
 
 # Clone the repository
 echo "Cloning the repository..."
-git clone "$repo_link?access_token=$access_token" /var/www/html/$app_name
+git clone "$repo_link?access_token=$access_token" /var/www/html/$APP_NAME
 
 # Install LAMP stack
 echo "Installing LAMP stack..."
 apt-get update
-apt-get install apache2 mysql-server php php-mysql libapache2-mod-php php-cli -y
+# Install PHP and required extensions
+ apt-get install apache2 mysql-server php libapache2-mod-php php-cli -y
 
-apt-get install php8.0-{bcmath,bz2,curl,gd,intl,mbstring,mysql,zip} -y
+# Get current PHP version
+PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
+
+# Install required PHP extensions for current PHP version
+ apt-get install php${PHP_VERSION}-bcmath php${PHP_VERSION}-bz2 php${PHP_VERSION}-curl php${PHP_VERSION}-gd php${PHP_VERSION}-intl php${PHP_VERSION}-mbstring php${PHP_VERSION}-mysql php${PHP_VERSION}-zip -y
+
 # Get user input for database name and database user
 read -p "Enter database name: " db_name
 read -p "Enter database user: " db_user
@@ -40,8 +47,7 @@ MYSQL_SCRIPT
 echo "Copying .env.example to .env..."
 cp /var/www/html/$APP_NAME/.env.example /var/www/html/$APP_NAME/.env
 
-# Get user input for app name
-read -p "Enter the app name: " app_name
+
 
 # Update .env file with user input
 echo "Updating .env file..."
