@@ -56,7 +56,11 @@ sed -i "s/DB_USERNAME=root/DB_USERNAME=$db_user/" /var/www/html/$APP_NAME/.env
 
 # Install Composer and dependencies
 echo "Installing Composer and dependencies..."
-curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Check if Composer is installed
+if ! command -v composer &> /dev/null
+then
+	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+fi
 cd /var/www/html/$APP_NAME
 composer install
 
